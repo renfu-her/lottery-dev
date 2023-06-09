@@ -14,6 +14,9 @@ class LotteryController extends Controller
     // 抽奬系統
     public function drawLottery()
     {
+
+        $users_all = User::all();
+
         // 獲取所有還沒有抽過獎的用戶
         $users = User::whereNotIn('id', function ($query) {
             $query->select('user_id')->from('lottery_exists');
@@ -27,22 +30,31 @@ class LotteryController extends Controller
             $query->select('lottery_id')->from('lottery_results');
         })->first();
 
-        // 記錄抽獎結果
-        LotteryResult::create([
-            'user_id' => $winner->id,
-            'lottery_id' => $lottery->id,
-        ]);
+        if ($lottery) {
+            // 記錄抽獎結果
+            LotteryResult::create([
+                'user_id' => $winner->id,
+                'lottery_id' => $lottery->id,
+            ]);
 
-        // 標記這個用戶已經抽過獎
-        LotteryExist::create([
-            'user_id' => $winner->id,
-        ]);
+            // 標記這個用戶已經抽過獎
+            LotteryExist::create([
+                'user_id' => $winner->id,
+            ]);
 
-        // 返回結果
-        return response()->json([
-            'message' => '抽獎完成',
-            'winner' => $winner,
-            'lottery' => $lottery
-        ]);
+            // 返回結果
+
+            return response()->json([
+                'message' => '抽獎完成',
+                'winner' => $winner,
+                'lottery' => $lottery
+            ]);
+        } else {
+            return response()->json([
+                'message' => '抽獎完成 - 尚未抽到',
+                'winner' => '',
+                'lottery' => ''
+            ]);
+        }
     }
 }

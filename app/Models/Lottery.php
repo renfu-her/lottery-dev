@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Lottery extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'image',
+    ];
 }
